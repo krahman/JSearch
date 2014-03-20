@@ -1,0 +1,174 @@
+private void getResults(String query) throws IOException{
+		String searchTerm = "";
+		int termid = 0;		
+		int docmatch = 0;
+		double start = System.currentTimeMillis();
+		String[] queries = query.split(" ");	
+		if (queries.length>1){
+			//more than 1 term
+			if (queries.length==2){
+				List<String> results = getMatchDocs(queries[0], 
+						queries[1]);
+				getDisplayed(results);
+			}else if(queries.length==3){
+				List<String> results = getMatchDocs(queries[0], 
+						queries[1], queries[2]);				
+				getDisplayed(results);
+			}else if(queries.length==4){
+				List<String> results = getMatchDocs(queries[0], 
+						queries[1], queries[2], queries[3]);
+				getDisplayed(results);
+			}else if(queries.length==5){
+				List<String> results = getMatchDocs(queries[0], 
+						queries[1], queries[2], queries[3], queries[4]);
+				getDisplayed(results);
+			}else if(queries.length==6){
+				List<String> results = getMatchDocs(queries[0], 
+						queries[1], queries[2], queries[3], queries[4], queries[5]);
+				getDisplayed(results);
+			}
+				
+		}else{
+			//one term
+			searchTerm = getStemmedQuery(query);
+			termid = getTermId(searchTerm);
+			if (termid > 0){
+				if (termdocposindex.containsKey(termid)){
+					TreeMap<Integer, List<Integer>> docpos = 
+						termdocposindex.get(termid);
+					Iterator docIter = docpos.keySet().iterator();
+					Object doc = null;
+					while(docIter.hasNext()){
+						doc = docIter.next();						
+						String filename = docmapindex.get(doc);						
+						System.out.println("Document No: "+filename+".");
+						docmatch++;
+					}					
+					
+				} else {
+					getTermDocPosIndex(termid);
+				}				
+			}
+		}
+		
+		
+		double elapsed = (System.currentTimeMillis()-start)/1000;		
+		System.out.print("\n");		
+		System.out.print("Search time : "+ elapsed +"seconds. \n");
+		System.out.print("\n");
+	}
+	
+	
+	
+	for (String position: positions){
+					if (termdocposindex.containsKey(Integer.parseInt(termid))){
+						Hashtable<Integer, List<Integer>> docpos = 
+							termdocposindex.get(Integer.parseInt(termid));
+						if (docpos.containsKey(Integer.parseInt(docid))){
+							List<Integer> lpos = docpos.get(Integer.parseInt(docid));
+							lpos.add(Integer.parseInt(position));
+							docpos.put(Integer.parseInt(docid), lpos);
+							ldocs.add(Integer.parseInt(docid));
+						} else {
+							List<Integer> lpos = new LinkedList<Integer>();
+							lpos.add(Integer.parseInt(position));
+							docpos.put(Integer.parseInt(docid), lpos);
+							ldocs.add(Integer.parseInt(docid));
+						}
+						termdocindex.put(Integer.parseInt(termid), ldocs);
+						termdocposindex.put(Integer.parseInt(termid), docpos);
+					} else {
+						Hashtable<Integer, List<Integer>> docpos = 
+							new Hashtable<Integer, List<Integer>>();
+						List<Integer> lpos = new LinkedList<Integer>();
+						lpos.add(Integer.parseInt(position));
+						docpos.put(Integer.parseInt(docid), lpos);
+						ldocs.add(Integer.parseInt(docid));
+						termdocindex.put(Integer.parseInt(termid), ldocs);
+						termdocposindex.put(Integer.parseInt(termid), docpos);
+					}					
+					
+				}
+				
+		Search search = new Search();		
+		String query = "";
+		int i = 0, j, k;
+		String arg;
+        char flag;
+        boolean vflag = false;
+        String outputfile = "";
+
+        while (i < args.length && args[i].startsWith("-")) {
+            arg = args[i++];
+
+    // use this type of check for "wordy" arguments
+            if (arg.equals("-loadindex")) {
+                search.loadIndex();
+            }
+
+    // use this type of check for arguments that require arguments
+            else if (arg.equals("-output")) {
+                if (i < args.length)
+                    outputfile = args[i++];
+                else
+                    System.err.println("-output requires a filename");
+                if (vflag)
+                    System.out.println("output file = " + outputfile);
+            }
+
+    // use this type of check for a series of flag arguments
+            else {
+                for (j = 1; j < arg.length(); j++) {
+                    flag = arg.charAt(j);
+                    switch (flag) {
+                    case 'x':
+                        if (vflag) System.out.println("Option x");
+                        break;
+                    case 'n':
+                        if (vflag) System.out.println("Option n");
+                        break;
+                    default:
+                        System.err.println("ParseCmdLine: illegal option " + flag);
+                        break;
+                    }
+                }
+            }
+        }
+		if (i == args.length)
+			System.err.print("Missing query.");
+		else {				
+			for (k=0; k < args.length; k++){
+				query += args[k];
+			}					
+			search.getDisplayedInt(search.getMatchDocs(query));
+		}
+		
+		
+		
+		// use this type of check for arguments that require arguments
+			            else if (arg.equals("-output")) {
+			                if (i < query.length)
+			                    outputfile = query[i++];
+			                else
+			                    System.err.println("-output requires a filename");
+			                if (vflag)
+			                    System.out.println("output file = " + outputfile);
+			            }
+			
+			    // use this type of check for a series of flag arguments
+			            else {
+			                for (j = 1; j < arg.length(); j++) {
+			                    flag = arg.charAt(j);
+			                    switch (flag) {
+			                    case 'x':
+			                        if (vflag) System.out.println("Option x");
+			                        break;
+			                    case 'n':
+			                        if (vflag) System.out.println("Option n");
+			                        break;
+			                    default:
+			                        System.err.println("ParseCmdLine: illegal option " + flag);
+			                        break;
+			                    }
+			                }
+			            }
